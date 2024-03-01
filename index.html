@@ -21,8 +21,6 @@
       margin-top: 20px;
     }
   </style>
-  <!-- <script src="https://unpkg.com/compromise"></script> -->
-  <script src="nlp.min.js"></script>
   <title>Subject Verb Object Analyzer</title>
 </head>
 <body>
@@ -32,35 +30,18 @@
   <textarea id="inputText" placeholder="Enter a sentence...">The quick brown fox jumps right over the lazy dog.</textarea>
   <button onclick="analyzeSentence()">Analyze</button>
 
-  <div id="result" style="display: none;">
-    <strong>Result:</strong><br>
-    Subject: <span id="subject"></span><br>
-    Verb: <span id="verb"></span><br>
-    Object: <span id="object"></span>
-  </div>
+  <p id="pra"><strong>verbs: </strong> <span id="verbs"></span></p>
 
   <script>
-    function analyzeSentence() {
-      const inputText = document.getElementById('inputText').value;
-      const resultElement = document.getElementById('result');
-
-      const doc = nlp(inputText);
-      const sentence = doc.sentences().json();
-      let verbs = '';
-      let subjects = '';
-      let objects = '';
-      console.log(sentence);
-      [...sentence].forEach((text) => {
-        const { sentence = {} } = text;
-        subjects += sentence?.subject + '/ ';
-        verbs += sentence?.verb + '/ ';
-        objects += sentence?.predicate + '/ ';
-      });
-      document.getElementById('subject').innerText = subjects;
-      document.getElementById('verb').innerText = verbs;
-      document.getElementById('object').innerText = objects;
-
-      resultElement.style.display = 'block';
+    const pra = document.getElementById('pra');
+    pra.style.display = 'none';
+    async function analyzeSentence() {
+    const txt = document.querySelector('#inputText').value;
+      const res = await fetch('./all_verbs.json').then(res => res.json()).then(data => data);
+      const verbs = res.map(verb => [(verb.verb1)?.trim(), (verb.verb2)?.trim(), (verb.verb3)?.trim(), (verb.verb4)?.trim(), (verb.verb5)?.trim()]);
+      const isVerbs = txt.replace(/[,.]/g , '').split(' ').filter(tx => verbs.some(v => v.includes(tx)));
+      pra.style.display = 'block';
+      document.getElementById('verbs').textContent = isVerbs.join(' / ');
     }
   </script>
 
